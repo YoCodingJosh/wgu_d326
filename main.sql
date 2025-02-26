@@ -10,6 +10,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Test function
+SELECT determine_rental_status('2021-01-01');
+SELECT determine_rental_status(NULL);
+
 -- Part C
 -- Detailed Table
 CREATE TABLE rental_details (
@@ -29,6 +33,10 @@ CREATE TABLE rental_summary (
     total_revenue DECIMAL(10,2),
     avg_rental_duration DECIMAL(5,2)
 );
+
+-- Test tables
+SELECT * FROM rental_details;
+SELECT * FROM rental_summary;
 
 -- Part D
 SELECT 
@@ -58,7 +66,7 @@ BEGIN
         SUM(rd.rental_amount) AS total_revenue,
         AVG(CASE 
             WHEN rd.return_date IS NOT NULL 
-            THEN EXTRACT(EPOCH FROM (rd.return_date - rd.rental_date)) / 86400 
+            THEN EXTRACT(EPOCH FROM (rd.return_date - rd.rental_date))::numeric / 86400 
             ELSE NULL 
         END) AS avg_rental_duration
     FROM rental_details rd
