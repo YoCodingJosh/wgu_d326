@@ -106,21 +106,36 @@ BEGIN
     TRUNCATE TABLE rental_summary;
     
     -- Repopulate detailed table
-    INSERT INTO rental_details (rental_id, customer_id, film_title, rental_date, return_date, rental_status, rental_amount)
-    SELECT 
+    INSERT INTO rental_details (
+        rental_id,
+        customer_id,
+        film_title,
+        rental_date,
+        return_date,
+        rental_status,
+        rental_amount
+    )
+    SELECT
         r.rental_id,
         r.customer_id,
         f.title AS film_title,
         r.rental_date,
         r.return_date,
-        determine_rental_status(r.return_date),
-        p.amount AS rental_amount
+        determine_rental_status(r.return_date) AS rental_status,
+        -- Sum all payments for that rental
+        SUM(p.amount) AS rental_amount
     FROM rental r
-    JOIN inventory i ON r.inventory_id = i.inventory_id
-    JOIN film f ON i.film_id = f.film_id
-    JOIN film_category fc ON f.film_id = fc.film_id
-    JOIN category c ON fc.category_id = c.category_id
-    JOIN payment p ON r.rental_id = p.rental_id;
+    JOIN inventory i      ON r.inventory_id = i.inventory_id
+    JOIN film f           ON i.film_id      = f.film_id
+    JOIN film_category fc ON f.film_id      = fc.film_id
+    JOIN category c       ON fc.category_id = c.category_id
+    JOIN payment p        ON r.rental_id    = p.rental_id
+    GROUP BY 
+        r.rental_id,
+        r.customer_id,
+        f.title,
+        r.rental_date,
+        r.return_date;
     
     -- Trigger will automatically update summary table
 END;
