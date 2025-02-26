@@ -66,7 +66,7 @@ BEGIN
         SUM(rd.rental_amount) AS total_revenue,
         AVG(CASE 
             WHEN rd.return_date IS NOT NULL 
-            THEN EXTRACT(EPOCH FROM (rd.return_date - rd.rental_date))::numeric / 86400 
+            THEN EXTRACT(EPOCH FROM (rd.return_date - rd.rental_date)) / 86400.0::numeric 
             ELSE NULL 
         END) AS avg_rental_duration
     FROM rental_details rd
