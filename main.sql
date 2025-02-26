@@ -64,11 +64,12 @@ BEGIN
         c.name AS category_name,
         COUNT(*) AS total_rentals,
         SUM(rd.rental_amount) AS total_revenue,
-        AVG(CASE 
-            WHEN rd.return_date IS NOT NULL 
-            THEN EXTRACT(EPOCH FROM (rd.return_date - rd.rental_date)) / 86400.0::numeric 
-            ELSE NULL 
+        AVG(CASE
+            WHEN rd.return_date IS NOT NULL THEN
+            EXTRACT(EPOCH FROM (rd.return_date::timestamp - rd.rental_date::timestamp)) / 86400.0
+            ELSE NULL
         END) AS avg_rental_duration
+
     FROM rental_details rd
     JOIN inventory i ON rd.rental_id = i.inventory_id
     JOIN film f ON i.film_id = f.film_id
