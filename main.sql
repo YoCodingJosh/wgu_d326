@@ -91,12 +91,6 @@ AFTER INSERT ON rental_details
 FOR EACH STATEMENT
 EXECUTE FUNCTION update_summary_table();
 
--- Test the trigger
-INSERT INTO rental_details (rental_id, customer_id, film_title, rental_date, return_date, rental_status, rental_amount)
-VALUES (1, 1, 'Film 1', '2021-01-01', '2021-01-02', 'Yes', 5.99);
-
-SELECT * FROM rental_summary;
-
 -- Part F
 CREATE OR REPLACE PROCEDURE refresh_rental_report()
 LANGUAGE plpgsql AS $$
